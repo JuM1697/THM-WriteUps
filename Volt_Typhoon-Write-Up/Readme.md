@@ -55,6 +55,45 @@ username="dean-admin" create useraccount
 ![alt text](image-2.png)
 
 ## Task 3 - Execution
+Volt Typhoon is known to exploit Windows Management Instrumentation Command-line (WMIC) for a range of execution techniques. They leverage WMIC for tasks such as gathering information and dumping valuable databases, allowing them to infiltrate and exploit target networks. By using "living off the land" binaries (LOLBins), they blend in with legitimate system activity, making detection more challenging.
+
+### Question 3
+**In an information gathering attempt, what command does the attacker run to find information about local drives on server01 & server02?**  
+This is where I actually struggled for the first time with my basic searches. When I first used the following query:
+```
+username="dean-admin" wmic
+```
+I received 19 pages of results and knew I was a bit far off of finding the answer. So lets check the question again. The adversary wants to find out about local drives on the systems "server01" and "server02". Lets try to add that to our query and see how it affects the result:
+```
+username="dean-admin" wmic disk server01
+```
+"No results".  
+Bummer.  
+What if we remove the "disk" keyword, since I dont know how the event will actually look like until I've seen it, and maybe it's not called disk but something else. And from our previous 19 pages results we can confirm that there are definetely events with "server01" in the so chances are good that this keyword is actually right. So let's try:
+```
+username="dean-admin" wmic server01
+```
+
+And great success! We receive only one result, we can see why our previous query didn't work and we also have our answer.
+![alt text](image-3.png)
+
+### Question 4
+**The attacker uses ntdsutil to create a copy of the AD database. After moving the file to a web server, the attacker compresses the database. What password does the attacker set on the archive?**  
+To get to the answer of this question we actually have to perform at least two queries. First of all: we learned that the attacker uses "ntdsutil" to creat AD database copies. So let's try that first and check-out the results.
+
+```
+username="dean-admin" ntdsutil
+```
+![alt text](image-4.png)
+We actually receive only one event, which tells us the name of the AD database copy file. With that knowledge, we create a new query, which includes the previous found-out filename.
+
+```
+username="dean-admin" temp.dit
+```
+
+Using this query, we receive three matching events. We see the creation event (which we saw earlier already) and two others. If we examine the two other events we notice that one of them seems to copy the file to a public webserver location on server01 using xcopy, and the other one does indeed perform a 7z operation on the file, including a password in the command-line-arguments.
+![alt text](image-5.png)
+
 ## Task 4 - Persistence
 ## Task 5 - Defense Evasion
 ## Task 6 - Credential Access
