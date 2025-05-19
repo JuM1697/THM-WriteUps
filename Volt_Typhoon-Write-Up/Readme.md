@@ -182,5 +182,55 @@ When clicking on the event I could see the full command, including the Base64 en
 ![alt text](image-12.png)
 
 ## Task 7 - Discovery & Lateral Movement
+Volt Typhoon uses enumeration techniques to gather additional information about network architecture, logging mechanisms, successful logins, and software configurations, enhancing their understanding of the target environment for strategic purposes.  
+The APT has been observed moving previously created web shells to different servers as part of their lateral movement strategy. This technique facilitates their ability to traverse through networks and maintain access across multiple systems.
+
+### Question 11
+**The attacker uses wevtutil, a log retrieval tool, to enumerate Windows logs. What event IDs does the attacker search for?
+Answer Format: Increasing order separated by a space.**  
+Compared to the previous question, the following was basically a walk in the park :-)  
+I searched simply for 
+```
+wevtutil
+```
+And examined the results. There were 12 results but scrolling through them revealed the answer pretty quickly which did not call for any further filtering.
+
+### Question 12
+**Moving laterally to server-02, the attacker copies over the original web shell. What is the name of the new web shell that was created?**  
+If you paid close attention at question 5 you should know this answer already.
+
 ## Task 8 - Collection
+During the collection phase, Volt Typhoon extracts various types of data, such as local web browser information and valuable assets discovered within the target environment.
+
+### Question 13
+**The attacker is able to locate some valuable financial information during the collection phase. What three files does Volt Typhoon make copies of using PowerShell?
+Answer Format: Increasing order separated by a space.**  
+This one was also quite easy to answer (maybe too easy?).  
+Searching for 
+```
+*finance*
+```
+revealed a few files in a very common comma-separated-value format which where the answer.
+
 ## Task 9 - C2 & Cleanup
+Volt Typhoon utilizes publicly available tools as well as compromised devices to establish discreet command and control (C2) channels.  
+To cover their tracks, the APT has been observed deleting event logs and selectively removing other traces and artifacts of their malicious activities.  
+
+### Question 14
+**The attacker uses netsh to create a proxy for C2 communications. What connect address and port does the attacker use when setting up the proxy?
+Answer Format: IP Port**  
+Now we need to find the netsh command which established the C2 channel. We search for it with 
+```
+netsh
+```
+![alt text](image-13.png)
+and find the answer in one of the four results.
+
+### Question 15
+**To conceal their activities, what are the four types of event logs the attacker clears on the compromised system?**  
+Last but not least: how do we find any PowerShell command that might have deleted any kind of Windows-EventLogs? We ask that google and find that wevtutil can also be used to **cl**ear events. We search for that, including the "clear" flag and find our answers.
+
+```
+wevtutil cl
+```
+![alt text](image-14.png)
