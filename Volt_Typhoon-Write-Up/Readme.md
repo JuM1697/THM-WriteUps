@@ -153,6 +153,34 @@ virtual
 ```
 
 ## Task 6 - Credential Access
+Volt Typhoon often combs through target networks to uncover and extract credentials from a range of programs. Additionally, they are known to access hashed credentials directly from system memory.
+
+### Question 9
+**Using reg query, Volt Typhoon hunts for opportunities to find useful credentials. What three pieces of software do they investigate?
+Answer Format: Alphabetical order separated by a comma and space.**  
+To get to this answer I also chose the "slow" way. I simply queried Splunk for any kind of "reg query" commands and got to the answer.
+```
+reg query
+```
+
+However, you could have also scrolled and read through all MITRE ATT&CK page and would have found the answer there as well.
+
+### Question 10
+**What is the full decoded command the attacker uses to download and run mimikatz?**  
+This one drove me crazy. Not gonna lie.  
+I eventually had to put it aside and do all the other questions first until I could answer this one but at some point finally found it.  
+Searching through splunk for "Mimikatz" was no success, also searching for any kind of download event like (Invoke-WebRequest, certutil, ...) was all no success. The reason: as written in the question, we are searching for an encoded command. So I was kind of lost how I could find this kind of event. I did some more online research and found the PowerShell flag to run encoded commands would be "-EncodedCommand" but no luck there also.  
+Also trying to search for events with a long entry in the "CommandLine" field did not show any useful results. I did some more filtering and wanted to know what kind of command I might have missed in my research so far. Maybe there was another way of executing encoded commands and I could simply not find it. So I build a statistical overview inside Splunk of all the Commands that have been issued by the adversary using this query:
+```
+CommandLine="*"| top limit=150 CommandLine
+```
+![alt text](image-10.png)
+Eight pages of results did not seem promising at all. However: I knew I was kind of searching for the needle in the stack, so I did a bold move and started on the back (so the least amount of called commands) and there it was. Hidden in plain sight another way of calling PowerShell commands from one PowerShell to another one, **bypassing** execution policies and **-E**ncoding the following command.
+![alt text](image-11.png)
+
+When clicking on the event I could see the full command, including the Base64 encoded part. I put this in [CyberChef](https://gchq.github.io/CyberChef/) and finally got the answer to this question.
+![alt text](image-12.png)
+
 ## Task 7 - Discovery & Lateral Movement
 ## Task 8 - Collection
 ## Task 9 - C2 & Cleanup
