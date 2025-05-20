@@ -46,9 +46,9 @@ So we start with a super simple and basic first query:
 ```
 username="dean-admin" create
 ```
-The good thing: we do find our answer.  
-The bad thing: we need to dig for it.  
-I did not come up with the idea to additionally add the "useraccount" filter to the query. If I would have though of it, it would have been way easier since only one result will show up.
+The good thing is that we do find our answer.  
+The bad thing is that we need to dig for it.  
+I did not come up with the idea to additionally add the "useraccount" filter to the query. If I had thought of it, it would have been much easier since only one result would show up.
 
 ```
 username="dean-admin" create useraccount
@@ -64,13 +64,13 @@ This is where I actually struggled for the first time with my basic searches. Wh
 ```
 username="dean-admin" wmic
 ```
-I received 19 pages of results and knew I was a bit far off of finding the answer. So lets check the question again. The adversary wants to find out about local drives on the systems "server01" and "server02". Lets try to add that to our query and see how it affects the result:
+I received 19 pages of results and knew I was a bit far from finding the answer. So let's check the question again. The adversary wants to find out about local drives on the systems "server01" and "server02". Let's try to add that to our query and see how it affects the results:  
 ```
 username="dean-admin" wmic disk server01
 ```
 "No results".  
 Bummer.  
-What if we remove the "disk" keyword, since I dont know how the event will actually look like until I've seen it, and maybe it's not called disk but something else. And from our previous 19 pages results we can confirm that there are definetely events with "server01" in the logs so chances are good that this keyword is actually right. So let's try:
+What if we remove the "disk" keyword, since I don't know how the event will actually look until I've seen it? Maybe it's not called "disk" but something else. From our previous 19 pages of results, we can confirm that there are definitely events with "server01" in the logs, so chances are good that this keyword is actually correct. So let's try:
 ```
 username="dean-admin" wmic server01
 ```
@@ -80,45 +80,45 @@ And great success! We receive only one result, we can see why our previous query
 
 ### Question 4
 **The attacker uses ntdsutil to create a copy of the AD database. After moving the file to a web server, the attacker compresses the database. What password does the attacker set on the archive?**  
-To get to the answer of this question we actually have to perform at least two queries. First of all: we learned that the attacker uses "ntdsutil" to creat AD database copies. So let's try that first and check-out the results.
+To get to the answer to this question, we actually have to perform at least two queries. First of all, we learned that the attacker uses "ntdsutil" to create AD database copies. So let's try that first and check out the results.  
 
 ```
 username="dean-admin" ntdsutil
 ```
 ![alt text](img/image-4.png)
-We actually receive only one event, which tells us the name of the AD database copy file. With that knowledge, we create a new query, which includes the previous found-out filename.
+We actually receive only one event, which tells us the name of the AD database copy file. With that knowledge, we create a new query that includes the previously found filename.
 
 ```
 username="dean-admin" temp.dit
 ```
 
-Using this query, we receive three matching events. We see the creation event (which we saw earlier already) and two others. If we examine the two other events we notice that one of them seems to copy the file to a public webserver location on server01 using xcopy, and the other one does indeed perform a 7z operation on the file, including a password in the command-line-arguments.
+Using this query, we receive three matching events. We see the creation event (which we saw earlier) and two others. If we examine the two other events, we notice that one of them seems to copy the file to a public web server location on server01 using xcopy, and the other one performs a 7z operation on the file, including a password in the command-line arguments.  
 ![alt text](img/image-5.png)
 
 ## Task 4 - Persistence
 Our target APT frequently employs web shells as a persistence mechanism to maintain a foothold. They disguise these web shells as legitimate files, enabling remote control over the server and allowing them to execute commands undetected.  
 ### Question 5
 **To establish persistence on the compromised server, the attacker created a web shell using base64 encoded text. In which directory was the web shell placed?**  
-For this question, there was probably a bit of luck involved. I you paid close attention to the previous query results you could see that file operations usually happened in a specific directory. When using that (you can acutally spot it with the last query I used to search for the temp.dit file). I tried it inside THM and it was the answer.  
+For this question, there was probably a bit of luck involved. If you paid close attention to the previous query results, you could see that file operations usually happened in a specific directory. When using that directory (you can actually spot it with the last query I used to search for the temp.dit file), I tried it inside THM, and it was the answer.  
 But how would one find out the answer to this question without "cheating"?  
 Here I used some OSINT to lead me to the answer.  
-I went to [MITRE ATT&CK](https://attack.mitre.org/) and searched for our APT that we are apparently dealing with. When searching through their techniques I found out, that [Volt Typhoon](https://attack.mitre.org/groups/G1017/) apparently has two special names for their web shells (AuditReport.jspx and iisstart.aspx) so I used that as a hint and built a query based on that:
+I went to [MITRE ATT&CK](https://attack.mitre.org/) and searched for our APT that we are apparently dealing with. When searching through their techniques, I found out, that [Volt Typhoon](https://attack.mitre.org/groups/G1017/) apparently has two special names for their web shells (AuditReport.jspx and iisstart.aspx) so I used that as a hint and built a query based on that:
 ```
 powershell AuditReport.jspx
 ```
 ![alt text](img/image-6.png)
 From the results we learn three things:
 1. The web shell we searched for (AuditReport.jspx), was definitely used, but named something else previously (iistart.aspx)
-2. The web shell has been copied from location a to b. Location a is actually our answer to the question
+2. The web shell has been copied from location A to location B. Location A is actually our answer to the question
 3. The web shell was spread to another system and probably used for lateral movement.
 With that knowledge, we should search for the original filename to see where it came from (and how it got there).  
 ```
 powershell iisstart.aspx
 ```
 ![alt text](img/image-7.png)
-We see that the web shell got to its first destination by abusing certutil (which is also on of their techniques mentioned at MITRE ATT&CK).  
+We see that the web shell got to its first destination by abusing certutil (which is also one of their techniques mentioned at MITRE ATT&CK).  
 
-Was using MITTRE ATT&CK less cheating than my previous answer? I guess. At least it was a cleaner and more reasonable way to get to the solution instead of "just trying".
+Was using MITRE ATT&CK less cheating than my previous answer? I guess. At least it was a cleaner and more reasonable way to get to the solution instead of "the cheat".
 
 ## Task 5 - Defense Evasion
 Volt Typhoon utilizes advanced defense evasion techniques to significantly reduce the risk of detection. These methods encompass regular file purging, eliminating logs, and conducting thorough reconnaissance of their operational environment.
