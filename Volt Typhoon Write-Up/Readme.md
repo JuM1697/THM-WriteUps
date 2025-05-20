@@ -17,7 +17,7 @@ Volt Typhoon often gains initial access to target networks by exploiting vulnera
 To answer that question I paid attention to the user that was mentioned ("Dean"). I was hoping that his username was somehow connected to the real one and could be found in the logs.  
 I simply queried the logs by searching for "dean".  
 And luckily we got quite a few results (note: remember to first search through "All time" data!).
-![alt text](image-1.png)
+![alt text](img/image-1.png)
 While scrolling through the results, you can quickly learn two thins:
 1. the username is not "Dean" it is "dean-admin"
 2. There seems to be a specific log source for the "ADSelfService Plus" logs which we can filter for.
@@ -34,7 +34,7 @@ username="dean-admin" service_name=ADSelfServicePlus action_name="Password Chang
 ```
 
 Now our list of results is very short, and our answer easy to spot. There is only one successful "Password Change" event. This is our first answer.
-![alt text](image.png)
+![alt text](img/image.png)
 
 ### Question 2
 **Shortly after Dean's account was compromised, the attacker created a new administrator account. What is the name of the new account that was created?**
@@ -52,7 +52,7 @@ I did not come up with the idea to additionally add the "useraccount" filter to 
 ```
 username="dean-admin" create useraccount
 ```
-![alt text](image-2.png)
+![alt text](img/image-2.png)
 
 ## Task 3 - Execution
 Volt Typhoon is known to exploit Windows Management Instrumentation Command-line (WMIC) for a range of execution techniques. They leverage WMIC for tasks such as gathering information and dumping valuable databases, allowing them to infiltrate and exploit target networks. By using "living off the land" binaries (LOLBins), they blend in with legitimate system activity, making detection more challenging.
@@ -75,7 +75,7 @@ username="dean-admin" wmic server01
 ```
 
 And great success! We receive only one result, we can see why our previous query didn't work and we also have our answer.
-![alt text](image-3.png)
+![alt text](img/image-3.png)
 
 ### Question 4
 **The attacker uses ntdsutil to create a copy of the AD database. After moving the file to a web server, the attacker compresses the database. What password does the attacker set on the archive?**  
@@ -84,7 +84,7 @@ To get to the answer of this question we actually have to perform at least two q
 ```
 username="dean-admin" ntdsutil
 ```
-![alt text](image-4.png)
+![alt text](img/image-4.png)
 We actually receive only one event, which tells us the name of the AD database copy file. With that knowledge, we create a new query, which includes the previous found-out filename.
 
 ```
@@ -92,7 +92,7 @@ username="dean-admin" temp.dit
 ```
 
 Using this query, we receive three matching events. We see the creation event (which we saw earlier already) and two others. If we examine the two other events we notice that one of them seems to copy the file to a public webserver location on server01 using xcopy, and the other one does indeed perform a 7z operation on the file, including a password in the command-line-arguments.
-![alt text](image-5.png)
+![alt text](img/image-5.png)
 
 ## Task 4 - Persistence
 Our target APT frequently employs web shells as a persistence mechanism to maintain a foothold. They disguise these web shells as legitimate files, enabling remote control over the server and allowing them to execute commands undetected.  
@@ -105,7 +105,7 @@ I went to [MITRE ATT&CK](https://attack.mitre.org/) and searched for our APT tha
 ```
 powershell AuditReport.jspx
 ```
-![alt text](image-6.png)
+![alt text](img/image-6.png)
 From the results we learn three things:
 1. The web shell we searched for (AuditReport.jspx), was definitely used, but named something else previously (iistart.aspx)
 2. The web shell has been copied from location a to b. Location a is actually our answer to the question
@@ -114,7 +114,7 @@ With that knowledge, we should search for the original filename to see where it 
 ```
 powershell iisstart.aspx
 ```
-![alt text](image-7.png)
+![alt text](img/image-7.png)
 We see that the web shell got to its first destination by abusing certutil (which is also on of their techniques mentioned at MITRE ATT&CK).  
 
 Was using MITTRE ATT&CK less cheating than my previous answer? I guess. At least it was a cleaner and more reasonable way to get to the solution instead of "just trying".
@@ -133,7 +133,7 @@ So I did another search and search for the powershell variable and keeping an ey
 ```
 powershell "*registryPath*"
 ```
-![alt text](image-8.png)
+![alt text](img/image-8.png)
 We get nine results and some of them do look like they remove something. And those of you who are more familiar with PowerShell than me know immediately that this is the answer to our question.
 
 ### Question 7
@@ -143,7 +143,7 @@ This question was rather simply compared to the previous ones. We remember from 
 7z
 ```
 We should receive two results. One of them is the creation command event that we already saw in question 4. The second one holds the answer since it contains the renaming command of the file.
-![alt text](image-9.png)
+![alt text](img/image-9.png)
 
 ### Question 8
 **Under what regedit path does the attacker check for evidence of a virtualized environment?**
@@ -174,12 +174,12 @@ Also trying to search for events with a long entry in the "CommandLine" field di
 ```
 CommandLine="*"| top limit=150 CommandLine
 ```
-![alt text](image-10.png)
+![alt text](img/image-10.png)
 Eight pages of results did not seem promising at all. However: I knew I was kind of searching for the needle in the stack, so I did a bold move and started on the back (so the least amount of called commands) and there it was. Hidden in plain sight another way of calling PowerShell commands from one PowerShell to another one, **bypassing** execution policies and **-E**ncoding the following command.
-![alt text](image-11.png)
+![alt text](img/image-11.png)
 
 When clicking on the event I could see the full command, including the Base64 encoded part. I put this in [CyberChef](https://gchq.github.io/CyberChef/) and finally got the answer to this question.
-![alt text](image-12.png)
+![alt text](img/image-12.png)
 
 ## Task 7 - Discovery & Lateral Movement
 Volt Typhoon uses enumeration techniques to gather additional information about network architecture, logging mechanisms, successful logins, and software configurations, enhancing their understanding of the target environment for strategic purposes.  
@@ -223,7 +223,7 @@ Now we need to find the netsh command which established the C2 channel. We searc
 ```
 netsh
 ```
-![alt text](image-13.png)
+![alt text](img/image-13.png)
 and find the answer in one of the four results.
 
 ### Question 15
@@ -233,4 +233,4 @@ Last but not least: how do we find any PowerShell command that might have delete
 ```
 wevtutil cl
 ```
-![alt text](image-14.png)
+![alt text](img/image-14.png)
