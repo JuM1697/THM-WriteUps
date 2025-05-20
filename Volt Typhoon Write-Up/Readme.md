@@ -125,30 +125,30 @@ Volt Typhoon utilizes advanced defense evasion techniques to significantly reduc
 
 ### Question 6
 **In an attempt to begin covering their tracks, the attackers remove evidence of the compromise. They first start by wiping RDP records. What PowerShell cmdlet does the attacker use to remove the “Most Recently Used” record?**  
-To get to this question I had to perform some OSINT again. I did not know which PowerShell cmdlet would be able to remove the "Most recently used" (MRU) records, so I did a quick Google search. The results did not help a lot, but I found out, that you could remove that through registry keys. So I searched inside Splunk for the mentioned registry keys, hoping I would find any kind of interaction with them.
+To answer this question, I had to perform some OSINT again. I did not know which PowerShell cmdlet would be able to remove the "Most Recently Used" (MRU) records, so I did a quick Google search. The results did not help much, but I found out that you could remove them through registry keys. So, I searched inside Splunk for the mentioned registry keys, hoping to find any kind of interaction with them.
 ```
 powershell "*terminal server*"
 ```
-With these results I could see that there have been indeed interactions with the registry key responsible for storing the MRUs. However this was not my answer yet, since it had only been stored in a variable and I did not have the real PowerShell call for removing them in my results.  
-So I did another search and search for the powershell variable and keeping an eye on the timestamps, so they would match roughly to my previous results
+With these results, I could see that there had indeed been interactions with the registry key responsible for storing the MRUs. However, this was not my answer yet, since it had only been stored in a variable, and I did not have the actual PowerShell call for removing them in my results.
+So, I did another search for the PowerShell variable while keeping an eye on the timestamps to ensure they roughly matched my previous results.
 ```
 powershell "*registryPath*"
 ```
 ![alt text](img/image-8.png)
-We get nine results and some of them do look like they remove something. And those of you who are more familiar with PowerShell than me know immediately that this is the answer to our question.
+We received nine results, and some of them appear to remove something. Those of you who are more familiar with PowerShell than I am will immediately recognize that this is the answer to our question.
 
 ### Question 7
 **The APT continues to cover their tracks by renaming and changing the extension of the previously created archive. What is the file name (with extension) created by the attackers?**  
-This question was rather simply compared to the previous ones. We remember from question 4 that the adversary used a 7z command to create the archive. We can search for that to find out the name of the created file again.
+This question was rather simple compared to the previous ones. We remember from question 4 that the adversary used a 7z command to create the archive. We can search for that to find out the name of the created file again.
 ```
 7z
 ```
-We should receive two results. One of them is the creation command event that we already saw in question 4. The second one holds the answer since it contains the renaming command of the file.
+We should receive two results. One of them is the creation command event that we already saw in question 4. The second one holds the answer, as it contains the renaming command for the file.
 ![alt text](img/image-9.png)
 
 ### Question 8
 **Under what regedit path does the attacker check for evidence of a virtualized environment?**
-Here I did a quick Google search again to see which kind of virtualization would store which kind of key. I found out, that most of them contain any kind of "virtual" (who would have guessed that) in theiry key. So I just search for that and immediately got the answer.
+Here, I did a quick Google search again to see which kind of virtualization would store which kind of key. I found out that most of them contain some form of "virtual" (who would have guessed that) in their key. So, I just searched for that and immediately got the answer.
 ```
 virtual
 ```
@@ -159,7 +159,7 @@ Volt Typhoon often combs through target networks to uncover and extract credenti
 ### Question 9
 **Using reg query, Volt Typhoon hunts for opportunities to find useful credentials. What three pieces of software do they investigate?
 Answer Format: Alphabetical order separated by a comma and space.**  
-To get to this answer I also chose the "slow" way. I simply queried Splunk for any kind of "reg query" commands and got to the answer.
+To get to this answer I also chose the "slow" way. I simply queried Splunk for any kind of "reg query" commands and reached the answer.
 ```
 reg query
 ```
@@ -168,15 +168,17 @@ However, you could have also scrolled and read through all MITRE ATT&CK page and
 
 ### Question 10
 **What is the full decoded command the attacker uses to download and run mimikatz?**  
-This one drove me crazy. Not gonna lie.  
-I eventually had to put it aside and do all the other questions first until I could answer this one but at some point finally found it.  
-Searching through splunk for "Mimikatz" was no success, also searching for any kind of download event like (Invoke-WebRequest, certutil, ...) was all no success. The reason: as written in the question, we are searching for an encoded command. So I was kind of lost how I could find this kind of event. I did some more online research and found the PowerShell flag to run encoded commands would be "-EncodedCommand" but no luck there also.  
-Also trying to search for events with a long entry in the "CommandLine" field did not show any useful results. I did some more filtering and wanted to know what kind of command I might have missed in my research so far. Maybe there was another way of executing encoded commands and I could simply not find it. So I build a statistical overview inside Splunk of all the Commands that have been issued by the adversary using this query:
+This one drove me crazy, not gonna lie.
+I eventually had to put it aside and do all the other questions first until I could answer this one, but at some point, I finally found it.
+Searching through Splunk for "Mimikatz" was unsuccessful; also, searching for any kind of download event like Invoke-WebRequest, certutil, etc., was all unsuccessful. The reason: as written in the question, we are searching for an encoded command. So, I was kind of lost on how I could find this kind of event.  
+I did some more online research and found that the PowerShell flag to run encoded commands would be -EncodedCommand, but no luck there either.  
+Trying to search for events with a long entry in the "CommandLine" field did not show any useful results. I did some more filtering and wanted to know what kind of command I might have missed in my research so far. Maybe there was another way of executing encoded commands, and I simply could not find it.  
+So, I built a statistical overview inside Splunk of all the commands that had been issued by the adversary using this query::
 ```
 CommandLine="*"| top limit=150 CommandLine
 ```
 ![alt text](img/image-10.png)
-Eight pages of results did not seem promising at all. However: I knew I was kind of searching for the needle in the hay-stack, so I did a bold move and started on the back (so the least amount of called commands) and there it was. Hidden in plain sight another way of calling PowerShell commands from one PowerShell to another one, **bypassing** execution policies and **-E**ncoding the following command.
+Eight pages of results did not seem promising at all. However, I knew I was searching for the needle in the haystack, so I made a bold move and started from the back (so the least number of called commands) and there it was. Hidden in plain sight another way of calling PowerShell commands from one PowerShell instance to another, **bypassing** execution policies and **-E**ncoding the following command.
 ![alt text](img/image-11.png)
 
 When clicking on the event I could see the full command, including the Base64 encoded part. I put this in [CyberChef](https://gchq.github.io/CyberChef/) and finally got the answer to this question.
@@ -190,15 +192,15 @@ The APT has been observed moving previously created web shells to different serv
 **The attacker uses wevtutil, a log retrieval tool, to enumerate Windows logs. What event IDs does the attacker search for?
 Answer Format: Increasing order separated by a space.**  
 Compared to the previous question, the following was basically a walk in the park :-)  
-I searched simply for 
+I simply searched for 
 ```
 wevtutil
 ```
-And examined the results. There were 12 results but scrolling through them revealed the answer pretty quickly which did not call for any further filtering.
+And examined the results. There were 12 results, but scrolling through them revealed the answer pretty quickly, which did not call for any further filtering.
 
 ### Question 12
 **Moving laterally to server-02, the attacker copies over the original web shell. What is the name of the new web shell that was created?**  
-If you paid close attention at question 5 you should know this answer already.
+If you paid close attention to question 5, you should already know this answer.
 
 ## Task 8 - Collection
 During the collection phase, Volt Typhoon extracts various types of data, such as local web browser information and valuable assets discovered within the target environment.
@@ -206,7 +208,7 @@ During the collection phase, Volt Typhoon extracts various types of data, such a
 ### Question 13
 **The attacker is able to locate some valuable financial information during the collection phase. What three files does Volt Typhoon make copies of using PowerShell?
 Answer Format: Increasing order separated by a space.**  
-This one was also quite easy to answer (maybe too easy?).  
+This one was also quite easy to answer (perhaps too easy?).  
 Searching for 
 ```
 *finance*
@@ -220,7 +222,7 @@ To cover their tracks, the APT has been observed deleting event logs and selecti
 ### Question 14
 **The attacker uses netsh to create a proxy for C2 communications. What connect address and port does the attacker use when setting up the proxy?
 Answer Format: IP Port**  
-Now we need to find the netsh command which established the C2 channel. We search for it with 
+Now we need to find the netsh command that established the C2 channel. We search for it using 
 ```
 netsh
 ```
@@ -229,9 +231,13 @@ and find the answer in one of the four results.
 
 ### Question 15
 **To conceal their activities, what are the four types of event logs the attacker clears on the compromised system?**  
-Last but not least: how do we find any PowerShell command that might have deleted any kind of Windows-EventLogs? We ask that google and find that wevtutil can also be used to **cl**ear events. We search for that, including the "clear" flag and find our answers.
+Last but not least: how do we find any PowerShell command that might have deleted any kind of Windows-EventLogs? We consult google and discover that wevtutil can also be used to **cl**ear events. We search for that, including the "clear" flag, and find our answer.
 
 ```
 wevtutil cl
 ```
 ![alt text](img/image-14.png)
+
+## END
+I hope you enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
+If you have any questions, don't hesitate to get in touch with me.
