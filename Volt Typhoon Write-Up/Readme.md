@@ -175,7 +175,7 @@ Also trying to search for events with a long entry in the "CommandLine" field di
 CommandLine="*"| top limit=150 CommandLine
 ```
 ![alt text](img/image-10.png)
-Eight pages of results did not seem promising at all. However: I knew I was kind of searching for the needle in the stack, so I did a bold move and started on the back (so the least amount of called commands) and there it was. Hidden in plain sight another way of calling PowerShell commands from one PowerShell to another one, **bypassing** execution policies and **-E**ncoding the following command.
+Eight pages of results did not seem promising at all. However: I knew I was kind of searching for the needle in the hay-stack, so I did a bold move and started on the back (so the least amount of called commands) and there it was. Hidden in plain sight another way of calling PowerShell commands from one PowerShell to another one, **bypassing** execution policies and **-E**ncoding the following command.
 ![alt text](img/image-11.png)
 
 When clicking on the event I could see the full command, including the Base64 encoded part. I put this in [CyberChef](https://gchq.github.io/CyberChef/) and finally got the answer to this question.
