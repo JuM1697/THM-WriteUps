@@ -29,7 +29,7 @@
 
         /* TOC links */
         .toc-list a {
-        color: #0366d6;
+        color: #159957;
         text-decoration: none;
         }
 
@@ -52,6 +52,12 @@
         .toc-list .toc-list {
         padding-left: 1.2em;
         margin-top: 0.2em;
+        }
+
+        /* Remove default bolding from active link */
+        .toc-link.is-active-link {
+        font-weight: normal;
+        color: #157878; /* Optional: add Cayman’s accent color */
         }
     </style>
 
@@ -87,7 +93,7 @@
         tocbot.init({
         tocSelector: '#toc',
         contentSelector: '.main-content',
-        headingSelector: 'h2, h3',
+        headingSelector: 'h2',
         collapseDepth: 6,
         orderedList: false,
         scrollSmooth: true,
