@@ -4,14 +4,15 @@ description: Investigate a suspected intrusion by the notorious APT group Volt T
 permalink: /Volt%20Typhoon%20Write-Up/
 ---
 [🔙Take me back!🔙](../)
-# Table of Contents
-<div id="toc" class="toc-container"></div>
 
 # Volt Typhoon
 This write-up is for the "Volt Typhoon" room on TryHackMe. You can find the room here: https://tryhackme.com/room/volttyphoon.
 This is my very first write-up for a THM room, so bear with me.
 I hope it will help you solve this room while also learning and tackling these challenges.  
 As a side note, I have little to no experience with Splunk. I mostly used very basic string searches that are connected with "AND," and they always led me to the result.
+
+## Table of Contents
+<div id="toc" class="toc-container"></div>
 
 ## Task 1 - IR Scenario
 Task 1 does not ask you to do anything besides starting the attached machine and connecting to the Splunk instance hosted on it (http://MACHINE_IP:8000). I used the THM Attack Box to connect to Splunk; however, it can also be done via your own system and OpenVPN.  
