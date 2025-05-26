@@ -1,5 +1,4 @@
 ---
-title: Volt Typhoon
 description: Investigate a suspected intrusion by the notorious APT group Volt Typhoon.
 ---
 # Volt Typhoon
