@@ -1,8 +1,3 @@
----
-title: Volt Typhoon
-permalink: /Volt-Typhoon/
----
-
 # Volt Typhoon
 This write-up is for the "Volt Typhoon" room on TryHackMe. You can find the room here: https://tryhackme.com/room/volttyphoon.
 This is my very first write-up for a THM room, so bear with me.
