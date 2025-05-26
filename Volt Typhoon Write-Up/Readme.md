@@ -5,6 +5,10 @@ permalink: /Volt%20Typhoon%20Write-Up/
 last_modified: 2025-05-26
 ---
 [🔙Take me back!🔙](../)
+
+# Table of Contents
+<div id="toc"></div>
+
 # Volt Typhoon
 This write-up is for the "Volt Typhoon" room on TryHackMe. You can find the room here: https://tryhackme.com/room/volttyphoon.
 This is my very first write-up for a THM room, so bear with me.
