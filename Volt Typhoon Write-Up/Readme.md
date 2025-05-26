@@ -6,8 +6,8 @@ permalink: /Volt%20Typhoon%20Write-Up/
 [🔙Take me back!🔙](../)
 
 # Volt Typhoon
-This write-up is for the "Volt Typhoon" room on TryHackMe. You can find the room here: https://tryhackme.com/room/volttyphoon.
-This is my very first write-up for a THM room, so bear with me.
+This write-up is for the "Volt Typhoon" room on TryHackMe. You can find the room [here](https://tryhackme.com/room/volttyphoon).  
+This is my very first write-up for a THM room, so bear with me.  
 I hope it will help you solve this room while also learning and tackling these challenges.  
 As a side note, I have little to no experience with Splunk. I mostly used very basic string searches that are connected with "AND," and they always led me to the result.
 
