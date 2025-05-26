@@ -2,7 +2,6 @@
 title: Volt Typhoon
 description: Investigate a suspected intrusion by the notorious APT group Volt Typhoon.
 permalink: /Volt%20Typhoon%20Write-Up/
-last_modified: 2025-05-26
 ---
 [🔙Take me back!🔙](../)
 
