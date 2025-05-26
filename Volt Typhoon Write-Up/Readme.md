@@ -5,8 +5,7 @@ permalink: /Volt%20Typhoon%20Write-Up/
 ---
 [🔙Take me back!🔙](../)
 # Table of Contents
-<div id="toc"></div>
-
+<div id="toc" class="toc-container"></div>
 
 # Volt Typhoon
 This write-up is for the "Volt Typhoon" room on TryHackMe. You can find the room here: https://tryhackme.com/room/volttyphoon.
