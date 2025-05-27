@@ -59,10 +59,70 @@ Once we found the encoded value, we head to [CyberChef](https://gchq.github.io/C
 
 ## Question 5
 **What password was set for the new user account?**  
+It took me quite some time to figure this one out to be honest.  
+I was way too focused on PowerShell and forgot basic windows tools that can be used to modify user accounts and groups.  
+Unfortunately the existing wazuh rules did not help me either.  
+So what did I check for?  
+Probably the first thing I looked for was any kind of PowerShell call that might be related to user creation:
+```
+New-LocalUser
+password
+passwords
+pass
+```
+unfortunately none of them lead to any useful results.  
+After that I searched for "-EncodedCommand" hoping I might find other Base64 encoded PowerShell commands that are creating a user. But that lead to a deadend also.  
 
+At this point I did a lot of manual digging and searching. I tried various search queries and scrolled a lot just through the logs and tried to understand what has been done by the adversary.  
+This is actually a quite useful lesson since in real-life you might not always know what you're searching for and it takes time and patience to build a complete representation of the attack-chain. So you need to be ready to spend some time just manually digging and searching through the logs if you don't know how to proceed further.  
+For the sake of reaching an answer of this room we'll look into some queries that will help you to find the answer to this question.
+
+```
+net command
+
+net.exe
+
+"/add"
+```
+Each of those three queries should return only a very limited set events that lead you to the answer of question 5.  
+By examining those events you can also recognize why my previous queries didn't work. The adversary used the "net user" command and the password is simply passed as a commandline argument without a flag. Therefore searching for something like "password" would not lead to the answer.  
+
+![question 5 result](img/image-6.png)
+
+Another approach that helped me in a similiar situation was to look at the overall commands issued by the adversary. Sorting it by the amount of calls and filtering-out some things that are not interesting could also lead to a trace to look for the "net user" command.
+![statistics](img/image-7.png)
 
 ## Question 6
 **What is the name of the .exe that was used to dump credentials?**  
+Due to the fact that I have been observing quite a few looks in the previous five questions I accidentally stumbled upon this answer.  
+The first instict however should be too look for "mimikatz.exe" since it's the most common tool that is being used to dump any kind of credentials.  
+When searching for it, we do see some action, but there never was any "dumping".  
+If you're lucky you searched just for
+```
+mimikatz
+```
+and stumbled accidentally over the answer as well.  
+The correct approach should be though to search for 
+```
+*lsass*
+```
+since it usually holds the hashes of recently logged in users and is accessed by Mimikatz to dump them.  
+This way you should find the answer.
+![lsass results](img/image-8.png)
 
 ## Question 7
 **Data was exfiltrated from the host. What was the flag that was part of the data?**  
+The last question can be approached through different ways as well.  
+Considering the fact that the adversary has been doing everything through PowerShell we could search for any kind of "POST" event that has been triggered using PowerShell. This way we actually find the answer immediately.
+```
+POST
+```
+In a fully equipped IT-(Security-)Infrastructure you should be able to search for potential malicious file-uploads. Domains like "pastebin[.com]" should trigger some alerts in most environments.  
+![question 7 result](img/image-9.png)
+
+
+## END
+I really enjoyed the room due to the hands-on experience you could get using wazuh.  
+However I'm not sure if I did it wrong but I would've liked some more "showing-off" of inbuild detection rules. Sometimes it felt like I went down the wrong road.  
+Anyway, I hope you enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
+If you have any questions, don't hesitate to get in touch with me.
