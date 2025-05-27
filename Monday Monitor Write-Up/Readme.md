@@ -16,7 +16,7 @@ You can find the room [here](https://tryhackme.com/room/mondaymonitor).
 <div id="toc" class="toc-container"></div>
 
 ## Getting Started
-To start this challenge we need to start the attached VM to the host. It is not necessary to start an attack bock, since the host will be directly available through the browser navigation to https://[MACHINE-IP].p.thmlabs.com.  
+To start this challenge we need to start the attached VM to the host. It is not necessary to start an attack bock, since the host is directly available through the browser navigation to https://[MACHINE-IP].p.thmlabs.com.  
 Once the machine is started, login using the given credentials:
 ```
 username: admin
@@ -28,7 +28,7 @@ From the wazuh landing page head to "Security events" and select the query on th
 ![wazuh query selector](img/image-1.png)
 ![wazuh query](img/image-2.png)
 
-We know that the compromise happened between 29.04.2024 12:00 and 29.04.2024 20:00, so lets adjust the time range on the right side.  
+We know that the compromise happened between 29.04.2024 12:00 and 29.04.2024 20:00, so let's adjust the time range on the right side.  
 Once we did that, we should get a bunch of events visible in the dashboard and should be ready to go to tackle the challenge.
 ![wazuh setup dashboard](img/image-3.png)
 
@@ -54,15 +54,15 @@ While answering question 2 we should also be able to dissect the whole command a
 
 ## Question 4
 **What was encoded?**  
-This question can also be answered with the content from question 2. However we need to do some addition steps.  
-Once we found the encoded value, we head to [CyberChef](https://gchq.github.io/CyberChef/) and paste the encoded value into the "Input" field. As a recipe we chose "From Base64" and we should get our answer.
+This question can also be answered with the content from question 2. However we need to do some additional steps.  
+Once we found the encoded value, we head to [CyberChef](https://gchq.github.io/CyberChef/) and paste the encoded value into the "Input" field. As a recipe we choose "From Base64" and we should get our answer.
 
 ## Question 5
 **What password was set for the new user account?**  
-It took me quite some time to figure this one out to be honest.  
+It took me quite a bit of time to figure this one out to be honest.  
 I was way too focused on PowerShell and forgot basic windows tools that can be used to modify user accounts and groups.  
 Unfortunately the existing wazuh rules did not help me either.  
-So what did I check for?  
+So, what did I check for?  
 Probably the first thing I looked for was any kind of PowerShell call that might be related to user creation:
 ```
 New-LocalUser
@@ -70,8 +70,8 @@ password
 passwords
 pass
 ```
-unfortunately none of them lead to any useful results.  
-After that I searched for "-EncodedCommand" hoping I might find other Base64 encoded PowerShell commands that are creating a user. But that lead to a deadend also.  
+unfortunately, none of them led to any useful results.  
+After that I searched for "-EncodedCommand" hoping I might find other Base64 encoded PowerShell commands that are creating a user. But that led to a dead end also.  
 
 At this point I did a lot of manual digging and searching. I tried various search queries and scrolled a lot just through the logs and tried to understand what has been done by the adversary.  
 This is actually a quite useful lesson since in real-life you might not always know what you're searching for and it takes time and patience to build a complete representation of the attack-chain. So you need to be ready to spend some time just manually digging and searching through the logs if you don't know how to proceed further.  
@@ -89,13 +89,13 @@ By examining those events you can also recognize why my previous queries didn't 
 
 ![question 5 result](img/image-6.png)
 
-Another approach that helped me in a similiar situation was to look at the overall commands issued by the adversary. Sorting it by the amount of calls and filtering-out some things that are not interesting could also lead to a trace to look for the "net user" command.
+Another approach that helped me in a similar situation was to look at the overall commands issued by the adversary. Sorting it by the amount of calls and filtering-out some things that are not interesting could also lead to a trace to look for the "net user" command.
 ![statistics](img/image-7.png)
 
 ## Question 6
 **What is the name of the .exe that was used to dump credentials?**  
-Due to the fact that I have been observing quite a few looks in the previous five questions I accidentally stumbled upon this answer.  
-The first instict however should be too look for "mimikatz.exe" since it's the most common tool that is being used to dump any kind of credentials.  
+Due to the fact that I have been observing quite a few logs in the previous five questions I accidentally stumbled upon this answer.  
+The first instinct however should be to look for "mimikatz.exe" since it's the most common tool that is being used to dump any kind of credentials.  
 When searching for it, we do see some action, but there never was any "dumping".  
 If you're lucky you searched just for
 ```
@@ -123,6 +123,6 @@ In a fully equipped IT-(Security-)Infrastructure you should be able to search fo
 
 ## END
 I really enjoyed the room due to the hands-on experience you could get using wazuh.  
-However I'm not sure if I did it wrong but I would've liked some more "showing-off" of inbuild detection rules. Sometimes it felt like I went down the wrong road.  
-Anyway, I hope you enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
+However I'm not sure if I did it wrong but I would've liked some more "showing-off" of inbuilt detection rules. Sometimes it felt like I went down the wrong road.  
+Anyway, I hope you’ve enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
 If you have any questions, don't hesitate to get in touch with me.
