@@ -22,7 +22,7 @@ Once the machine is started, login using the given credentials:
 username: admin
 password: Mond*yM0nit0r7
 ```
-Inside wazuh, it is important to select the proper query because otherwise you will have a hard time finding the logs.  
+Inside wazuh, it is important to select the proper query, because otherwise you will have a hard time finding the logs.  
 From the wazuh landing page head to "Security events" and select the query on the left-hand side.
 ![wazuh landing page](img/image.png)
 ![wazuh query selector](img/image-1.png)
