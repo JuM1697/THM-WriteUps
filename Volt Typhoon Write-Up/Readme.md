@@ -248,6 +248,20 @@ wevtutil cl
 ```
 ![alt text](img/image-14.png)
 
+
+## Summary  
+In this challenge, we followed the traces of an attack by the adversary "Volt Typhoon".  
+We began examining the attack by identifying an arbitrary "Password Change" event for the user "dean-admin".  
+Following the traces, we verified that a new admin user had indeed been created around the time the "dean-admin" account was compromised.  
+Subsequently, several logs indicated potential information-gathering actions by the threat actor, including retrieving information about local drives using "wmic" and creating Active Directory copies with the help of "ntdsutil".  
+Later on, the AD copy was compressed and encrypted with a password using a common archiving tool.  
+To gain persistence, there were successful attempts to create a WebShell with Base64-encoded text using .jspx or .aspx files.  
+The adversary covered their tracks by deleting several registry entries related to MRU records and renaming files to less descriptive names that would have otherwise raised suspicion.  
+In the process of escalating privileges, the adversary queried the registry for stored secrets from applications like PuTTY and also downloaded Mimikatz using an encoded command.  
+After successfully escalating privileges, we observed lateral movement activities, including copying the WebShell to host server-02.  
+To finally achieve their objectives, the adversary copied several financial CSV files and likely attempted to exfiltrate them later using "netsh" and a connection to the C2 network.  
+As a final step to cover the tracks of the attack, several logs were deleted using "wevtutil cl".  
+
 ## END
 I hope you enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
 If you have any questions, don't hesitate to get in touch with me.
