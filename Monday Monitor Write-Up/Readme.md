@@ -120,9 +120,21 @@ POST
 In a fully equipped IT-(Security-)Infrastructure you should be able to search for potential malicious file-uploads. Domains like "pastebin[.com]" should trigger some alerts in most environments.  
 ![question 7 result](img/image-9.png)
 
+## Summary
 
-## END
-I really enjoyed the room due to the hands-on experience you could get using wazuh.  
-However I'm not sure if I did it wrong but I would've liked some more "showing-off" of inbuilt detection rules. Sometimes it felt like I went down the wrong road.  
-Anyway, I hope you’ve enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
-If you have any questions, don't hesitate to get in touch with me.
+The “Monday Monitor” exercise gave us a great chance to practice our incident response and analysis skills in a realistic environment.  With Wazuh logging everything under the hood, we got a front-row seat to a full-blown endpoint compromise, from initial access to data exfiltration.  
+The journey kicked off with a PowerShell download using `Invoke-WebRequest`, revealing our first clue: a suspiciously named file dropped on the host.  
+From there, the adversary moved fast, creating a scheduled task via `schtasks.exe`, setting it to run at a specific time, and hiding their real intentions behind some Base64 encoding. CyberChef came in handy to decode that part.  
+
+We hit a bit of a wall when it came to identifying the new user password.  
+The lesson here?  
+Not every attack screams “PowerShell.” Sometimes it’s just plain old `net user` with the password passed right in the command. There were no flags and no flair.  
+The real-world takeaway: don’t get tunnel vision on just one toolset. Always zoom out and look at the bigger picture.
+
+Later in the hunt, we spotted credential dumping activity, not with the usual `mimikatz.exe`, but with a process poking around `lsass`.  
+A solid reminder to watch the behavior, not just the filename.  
+And finally, with a simple search for `POST`, we uncovered the exfiltration attempt and the hidden flag that wrapped it all up.
+
+All in all, this room was a solid training ground. Whether you’re just dipping your toes into threat hunting or already waist-deep in Blue Team ops, it drove home the importance of timelines, pivoting your search strategy, and not getting discouraged when things aren’t immediately obvious.  
+
+As a side-note: I would've loved to see more "fancy" Wazuh functionalitites but maybe I simply used the tool wrong in some places.

@@ -250,17 +250,18 @@ wevtutil cl
 
 
 ## Summary  
-In this challenge, we followed the traces of an attack by the adversary "Volt Typhoon".  
-We began examining the attack by identifying an arbitrary "Password Change" event for the user "dean-admin".  
-Following the traces, we verified that a new admin user had indeed been created around the time the "dean-admin" account was compromised.  
-Subsequently, several logs indicated potential information-gathering actions by the threat actor, including retrieving information about local drives using "wmic" and creating Active Directory copies with the help of "ntdsutil".  
-Later on, the AD copy was compressed and encrypted with a password using a common archiving tool.  
-To gain persistence, there were successful attempts to create a WebShell with Base64-encoded text using .jspx or .aspx files.  
-The adversary covered their tracks by deleting several registry entries related to MRU records and renaming files to less descriptive names that would have otherwise raised suspicion.  
-In the process of escalating privileges, the adversary queried the registry for stored secrets from applications like PuTTY and also downloaded Mimikatz using an encoded command.  
-After successfully escalating privileges, we observed lateral movement activities, including copying the WebShell to host server-02.  
-To finally achieve their objectives, the adversary copied several financial CSV files and likely attempted to exfiltrate them later using "netsh" and a connection to the C2 network.  
-As a final step to cover the tracks of the attack, several logs were deleted using "wevtutil cl".  
+In this challenge, we traced the stealthy steps of the “Volt Typhoon” adversary as they executed a well-coordinated, multi-stage attack.  
+The investigation kicked off with a seemingly routine "Password Change" event tied to the dean-admin account. At first glance, it could’ve been benign — but as we dug deeper, it became clear this was the attacker’s first foothold. Around the same time, a new administrative user was created, confirming that dean-admin had been compromised and repurposed for persistence.  
+
+From there, the activity picked up. The attacker began probing the environment, using wmic to enumerate local drives and ntdsutil to generate a snapshot of Active Directory — classic reconnaissance and data gathering moves. The AD data was then compressed and encrypted using a familiar archiving tool, hinting at preparations for exfiltration.  
+
+Persistence was established quietly through the deployment of a WebShell — cleverly disguised in .jspx and .aspx files, with payloads obfuscated using Base64. Subtle, but effective.  
+
+To stay under the radar, the adversary wiped traces of their actions by clearing MRU (Most Recently Used) registry entries and renaming key files to avoid raising alarms. In their privilege escalation efforts, they hunted for stored secrets — querying the registry for applications like PuTTY — and pulled down Mimikatz via an encoded PowerShell command.  
+
+With elevated access secured, lateral movement came next. The WebShell was copied over to server-02, showing clear signs of an expanding presence across the network.  
+
+In the final stretch, the attacker zeroed in on their objective: sensitive financial data. They copied multiple .csv files and likely attempted to exfiltrate them using netsh to establish a connection with their C2 infrastructure. To cover their exit, they used wevtutil cl to clear event logs and erase evidence of the breach.
 
 ## END
 I hope you enjoyed reading my write-up and that it helped you while you were struggling to find any of the answers.  
