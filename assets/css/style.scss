@@ -1,3 +1,7 @@
+---
+---
+
+@import "{{ site.theme }}";
 #scrollTopBtn {
   display: none; /* Hidden by default */
   position: fixed;
@@ -19,3 +23,4 @@
 #scrollTopBtn:hover {
   background-color: #0f5555;
 }
+
