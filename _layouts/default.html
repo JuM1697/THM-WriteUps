@@ -14,53 +14,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     {% include head-custom.html %}
-    <style>
-        /* TOC wrapper styling */
-        .toc-container {
-        background: #f6f8fa;
-        border-left: 4px solid #157878;
-        padding: 1em;
-        margin: 2em 0;
-        font-family: "Open Sans", sans-serif;
-        font-size: 0.9em;
-        border-radius: 6px;
-        max-width: 100%;
-        }
-
-        /* TOC links */
-        .toc-list a {
-        color: #159957;
-        text-decoration: none;
-        }
-
-        .toc-list a:hover {
-        text-decoration: underline;
-        }
-
-        /* Collapse indicators */
-        .toc-list .is-collapsible > .toc-link::after {
-        content: ' ▼';
-        font-size: 0.8em;
-        color: #999;
-        }
-
-        .toc-list .is-collapsed > .toc-link::after {
-        content: ' ▶';
-        }
-
-        /* Indentation for nested lists */
-        .toc-list .toc-list {
-        padding-left: 1.2em;
-        margin-top: 0.2em;
-        }
-
-        /* Remove default bolding from active link */
-        .toc-link.is-active-link {
-        font-weight: normal;
-        color: #159957; /* Optional: add Cayman’s accent color */
-        }
-    </style>
-
+    
   </head>
   <body>
     <a id="skip-to-content" href="#content">Skip to the content.</a>
